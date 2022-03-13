@@ -1,0 +1,15 @@
+{
+  "fields": [
+    {
+      "name": "Name",
+      "type": "string"
+    },
+    {
+      "name": "Price",
+      "type": "double"
+    }
+  ],
+  "name": "Payment",
+  "namespace": "payment",
+  "type": "record"
+}
