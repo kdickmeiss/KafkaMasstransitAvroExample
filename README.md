@@ -10,14 +10,54 @@ In this example you will find:
 - Update / extend the readme file
 - Extend code documentation
 - Update unit test
+- Automatically set the schema for the payment topic
 
 ## Important information
-It is important that you create the topic before starting the consumer & provider (in order to avoid errors).
-For that start the docker environment, and create the topic:
+The required topic will always be created on start-up (when it does not exist), there is no need to create the topic yourself. 
 
-``
-payment_topic
-``
+If you want to create your own topic startup check the docker file for more information.
+```  # This "container" is a workaround to pre-create topics
+  # https://stackoverflow.com/questions/64865361/docker-compose-create-kafka-topics
+  init-kafka:
+    image: confluentinc/cp-server
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic payment_topic --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+```
+
+You still need to set the schema for the given topic, for the use the control-center or the schema-registry directly (Reference TO OTHER BLOCK)
+
+**Payment schema**
+
+```
+{
+  "fields": [
+    {
+      "name": "Name",
+      "type": "string"
+    },
+    {
+      "name": "Price",
+      "type": "double"
+    }
+  ],
+  "name": "Payment",
+  "namespace": "Payment",
+  "type": "record"
+}
+
+```
 
 ## Docker environment Information
 

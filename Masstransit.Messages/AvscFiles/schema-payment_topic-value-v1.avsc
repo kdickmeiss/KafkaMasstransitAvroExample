@@ -10,6 +10,6 @@
     }
   ],
   "name": "Payment",
-  "namespace": "payment",
+  "namespace": "Payment",
   "type": "record"
 }

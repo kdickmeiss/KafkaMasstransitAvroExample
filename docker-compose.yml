@@ -60,3 +60,22 @@ services:
       - zookeeper
       - broker
       - schema-registry
+
+  # This "container" is a workaround to pre-create topics
+  # https://stackoverflow.com/questions/64865361/docker-compose-create-kafka-topics
+  init-kafka:
+    image: confluentinc/cp-server
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic payment_topic --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
